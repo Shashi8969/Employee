@@ -91,7 +91,6 @@ class AddItemActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initializeFirebase()
-        empId = auth.currentUser?.uid
         setupUI()
         setupClickListeners()
         setupSpinners() // Call this method to initialize Spinners
@@ -215,7 +214,7 @@ class AddItemActivity : AppCompatActivity() {
                     name = name,
                     phoneNo = phoneNo,
                     addharNo = addharNo,
-                    empId = empId,
+                    empId = newItemRef,
                     referenceName = referenceName,
                     address = address,
                     imageUrl = imageUrl,

@@ -1,10 +1,8 @@
 package com.example.rrserviceadmin
 
 import android.os.Bundle
-import android.view.View
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.example.rrserviceadmin.databinding.ActivityEmployeeDetailsBinding
 import com.example.rrserviceadmin.model.Employee
@@ -23,13 +21,19 @@ class EmployeeDetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityEmployeeDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Retrieve the employeeId from the intent
         val employeeId = intent.getStringExtra("employeeId")
-        if (!employeeId.isNullOrEmpty()) {
-            fetchEmployeeDetails(employeeId)
-        } else {
-            // Handle case where employeeId is not passed
-            finish()
+        Log.d("EmployeeDetails", "Received employeeId: $employeeId")
+
+        // Check if employeeId is null or empty
+        if (employeeId.isNullOrEmpty()) {
+            Log.e("EmployeeDetails", "employeeId is null or empty")
+            finish() // Close the activity if employeeId is missing
+            return
         }
+
+        fetchEmployeeDetails(employeeId)
     }
 
     private fun fetchEmployeeDetails(employeeId: String) {
@@ -37,19 +41,30 @@ class EmployeeDetailsActivity : AppCompatActivity() {
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
+                        // Iterate through all the children (should ideally be only one)
                         for (childSnapshot in snapshot.children) {
                             val employee = childSnapshot.getValue(Employee::class.java)
-                            employee?.let { displayEmployeeDetails(it) }
-                            return // Assuming empId is unique, we can return after finding the first match
+                            if (employee != null) {
+                                displayEmployeeDetails(employee)
+                                return // Exit after displaying details
+                            } else {
+                                Log.e("EmployeeDetails", "Employee object is null for empId: $employeeId")
+                                finish()
+                            }
                         }
+                        // If no employee is found, log a warning and finish
+                        Log.e("EmployeeDetails", "No employee data found for ID: $employeeId")
+                        finish()
                     } else {
-                        // Employee not found
+                        // Employee not found, log and finish
+                        Log.e("EmployeeDetails", "Snapshot does not exist for ID: $employeeId")
                         finish()
                     }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    // Handle error
+                    // Log and finish on error
+                    Log.e("EmployeeDetails", "Database error: ${error.message}")
                     finish()
                 }
             })
@@ -57,37 +72,31 @@ class EmployeeDetailsActivity : AppCompatActivity() {
 
     private fun displayEmployeeDetails(employee: Employee) {
         binding.detailsNameTextView.text = employee.name
-        binding.detailsPhoneTextView.text = employee.phoneNo
+        binding.detailsPhoneTextView.text = "Phone: ${employee.phoneNo}"
         binding.detailsAddharTextView.text = "Addhar No: ${employee.addharNo}"
         binding.detailsReferenceNameTextView.text = "Reference: ${employee.referenceName}"
         binding.detailsAddressTextView.text = "Address: ${employee.address}"
 
-        if (!employee.imageUrl.isNullOrEmpty()) {
-            Glide.with(this)
-                .load(employee.imageUrl)
-                .placeholder(R.drawable.addimage)
-                .into(binding.detailsImageView)
-        } else {
-            binding.detailsImageView.setImageResource(R.drawable.addimage)
-        }
+        // Load the main employee image
+        loadImage(employee.imageUrl, binding.detailsImageView)
 
-        if (!employee.addharFrontImageUrl.isNullOrEmpty()) {
-            Glide.with(this)
-                .load(employee.addharFrontImageUrl)
-                .placeholder(R.drawable.addimage)
-                .into(binding.detailsAddharFrontImageView)
-        } else {
-            binding.detailsAddharFrontImageView.setImageResource(R.drawable.addimage)
-        }
+        // Load the front Aadhar image
+        loadImage(employee.addharFrontImageUrl, binding.detailsAddharFrontImageView)
 
-        if (!employee.addharBackImageUrl.isNullOrEmpty()) {
-            Glide.with(this)
-                .load(employee.addharBackImageUrl)
-                .placeholder(R.drawable.addimage)
-                .into(binding.detailsAddharBackImageView)
-        } else {
-            binding.detailsAddharBackImageView.setImageResource(R.drawable.addimage)
-        }
+        // Load the back Aadhar image
+        loadImage(employee.addharBackImageUrl, binding.detailsAddharBackImageView)
     }
 
+    // Helper function to load images using Glide
+    private fun loadImage(imageUrl: String?, imageView: android.widget.ImageView) {
+        if (!imageUrl.isNullOrEmpty()) {
+            Glide.with(this)
+                .load(imageUrl)
+                .placeholder(R.drawable.addimage)
+                .error(R.drawable.addimage)// error image
+                .into(imageView)
+        } else {
+            imageView.setImageResource(R.drawable.addimage)
+        }
+    }
 }
