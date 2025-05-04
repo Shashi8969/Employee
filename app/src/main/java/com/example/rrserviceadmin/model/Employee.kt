@@ -1,5 +1,7 @@
 package com.example.rrserviceadmin.model
 
+import android.widget.Spinner
+
 data class Employee(
     val name: String? = null,
     val phoneNo: String? = null,

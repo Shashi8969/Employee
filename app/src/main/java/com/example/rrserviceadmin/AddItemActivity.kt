@@ -5,6 +5,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.util.Log
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -35,13 +37,21 @@ class AddItemActivity : AppCompatActivity() {
         ActivityAddItemBinding.inflate(layoutInflater)
     }
 
+    // Data for Spinners
+    val addressOptions = arrayOf("Select Address", "Muzaffarpur", "Darbhanga", "Madhubani") // Added a default prompt
+    val referenceNameOptions = arrayOf("Select Reference Name", "Rishi", "Ravi", "Vinay", "Rahul") // Added a default prompt
+
+    // Adapters for Spinners
+    private lateinit var addressAdapter: ArrayAdapter<String>
+    private lateinit var referenceNameAdapter: ArrayAdapter<String>
+
     // Employee Details
     private var name: String? = null
     private var phoneNo: String? = null
     private var addharNo: String? = null
-    private var address: String? = null
-    private var empId: String? = null // Initialize here
-    private var referenceName: String? = null
+    private var address: String? = null // Changed to String to store selected value
+    private var empId: String? = null
+    private var referenceName: String? = null // Changed to String to store selected value
 
     // Image URIs
     private var empImageUri: Uri? = null
@@ -81,9 +91,10 @@ class AddItemActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initializeFirebase()
-        empId = auth.currentUser?.uid // Assign empId here
+        empId = auth.currentUser?.uid
         setupUI()
         setupClickListeners()
+        setupSpinners() // Call this method to initialize Spinners
     }
 
     private fun initializeFirebase() {
@@ -112,6 +123,14 @@ class AddItemActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupSpinners() {
+        addressAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, addressOptions)
+        binding.addressSpinner.adapter = addressAdapter
+
+        referenceNameAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, referenceNameOptions)
+        binding.referenceNameSpinner.adapter = referenceNameAdapter
+    }
+
     private fun validateFields(): Boolean {
         bindingItems()
 
@@ -131,13 +150,13 @@ class AddItemActivity : AppCompatActivity() {
                 false
             }
 
-            address.isNullOrEmpty() -> {
-                showErrorAndFocus(binding.address, "Please enter address")
+            address == "Select Address" -> { // Check if a valid address is selected
+                Toast.makeText(this, "Please select address", Toast.LENGTH_SHORT).show()
                 false
             }
 
-            referenceName.isNullOrEmpty() -> {
-                showErrorAndFocus(binding.referenceName, "Please enter reference name")
+            referenceName == "Select Reference Name" -> { // Check if a valid reference name is selected
+                Toast.makeText(this, "Please select reference name", Toast.LENGTH_SHORT).show()
                 false
             }
 
@@ -155,8 +174,8 @@ class AddItemActivity : AppCompatActivity() {
         name = binding.name.text.toString().toSentenceCase()
         phoneNo = binding.phone.text.toString()
         addharNo = binding.addhar.text.toString()
-        address = binding.address.text.toString()
-        referenceName = binding.referenceName.text.toString().toSentenceCase()
+        address = binding.addressSpinner.selectedItem.toString() // Get selected string from Spinner
+        referenceName = binding.referenceNameSpinner.selectedItem.toString() // Get selected string from Spinner
     }
 
     private fun uploadEmployeeData() {
@@ -166,13 +185,13 @@ class AddItemActivity : AppCompatActivity() {
 
         val currentAdminUid = auth.currentUser?.uid ?: run {
             showError("Admin not logged in")
-            resetUploadButton() // Ensure button is reset even if admin is not logged in
+            resetUploadButton()
             return
         }
         val empRef = database.getReference("Employees")
         val newItemRef = empRef.push().key ?: run {
             showError("Failed to generate a key")
-            resetUploadButton() // Ensure button is reset even if key generation fails
+            resetUploadButton()
             return
         }
         CoroutineScope(Dispatchers.Main).launch {

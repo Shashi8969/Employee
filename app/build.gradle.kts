@@ -56,6 +56,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation ("com.github.bumptech.glide:glide:4.16.0") // Use the latest version
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0") // If needed
     implementation("id.zelory:compressor:3.0.1") // Or latest
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3") // Or latest
 

@@ -31,10 +31,14 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Logout Successfully", Toast.LENGTH_SHORT).show()
             navigateToLoginActivity()
         }
-        binding.addMenu.setOnClickListener {
+        binding.addEmp.setOnClickListener {
             val intent = Intent(this, AddItemActivity::class.java)
             startActivity(intent)
 
+        }
+        binding.viewAllEmp.setOnClickListener {
+            val intent = Intent(this, EmployeeListActivity::class.java)
+            startActivity(intent)
         }
     }
     private fun logout(){
