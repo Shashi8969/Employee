@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="text_color">#53E88B</color> <!-- Your original text color -->
+    <color name="iconColor">#2196F3</color> <!-- Your original icon color -->
+    <color name="endColor">#15BE77</color> <!-- Your original end color -->
+    <color name="startColor">#53E88B</color> <!-- Your original start color -->
+
+    <!-- Add some more colors for light mode -->
+    <color name="light_background">#F5F5F5</color> <!-- Light gray background -->
+    <color name="light_surface">#FFFFFF</color> <!-- White surface color -->
+    <color name="light_text">#212121</color> <!-- Dark gray text for contrast -->
+    <color name="light_icon">#757575</color> <!-- Gray icon color -->
+
+    <!-- Dark mode specific colors -->
+    <color name="dark_background">#1E1E1E</color> <!-- Dark gray background -->
+    <color name="dark_surface">#292929</color> <!-- Slightly lighter gray for surfaces -->
+    <color name="dark_text">#EEEEEE</color> <!-- Light gray text for contrast -->
+    <color name="dark_icon">#BDBDBD</color> <!-- Light gray icon color -->
+    <color name="colorPrimary">#FF6200EE</color>
+
+    <color name="primary">#2196F3</color>         <!-- Blue 500 -->
+    <color name="primary_light">#64B5F6</color>    <!-- Blue 300 -->
+    <color name="primary_dark">#1976D2</color>     <!-- Blue 700 -->
+    <color name="secondary">#90CAF9</color>       <!-- Blue 200 (Accent) -->
+    <color name="background">#F0F4F7</color>      <!-- Light Gray -->
+    <color name="surface">#FFFFFF</color>         <!-- White (for cards, etc.) -->
+    <color name="text_primary">#212121</color>     <!-- Dark Gray -->
+    <color name="text_secondary">#757575</color>   <!-- Medium Gray -->
+    <color name="error">#F44336</color>
+</resources>
